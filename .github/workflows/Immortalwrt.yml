@@ -25,9 +25,10 @@ on:
       CONFIG_FILE:
         description: '请选择[seed文件夹内]的配置文件'
         required: true
-        default: 'x86_64'
+        default: 'x86'
         type: choice
         options:
+          - 'x86'
           - 'x86_64'
           - 'armsr_rootfs_tar_gz'
       INFORMATION_NOTICE:
