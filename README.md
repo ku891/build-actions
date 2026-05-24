@@ -9,7 +9,7 @@
   2025年5月30号
  <br><br>
 
- 1、修复[223](https://github.com/281677160/build-actions/issues/223)变量拼写错误的问题
+ 1、修复[223](https://github.com/ku891/build-actions/issues/223)变量拼写错误的问题
  
 
  ---
@@ -69,7 +69,7 @@
  
  2、diy-part.sh文件内容有小修改，别直接复制
  
- 3、不想用这个仓库编译的话，可以使用 https://github.com/281677160/actions-openwrt 此仓库，原汁原味，啥都没修改过的
+ 3、不想用这个仓库编译的话，可以使用 https://github.com/ku891/actions-openwrt 此仓库，原汁原味，啥都没修改过的
 
 
  ---
@@ -247,7 +247,7 @@ CONFIG_TARGET_armsr_armv8_DEVICE_generic=y
 <summary>📳本地编译</summary>
 <br><br>
 
-《[本地Ubuntu一键编译OpenWrt固件](https://github.com/281677160/bendi)》
+《[本地Ubuntu一键编译OpenWrt固件](https://github.com/ku891/bendi)》
 
 <br/>
 </details>
@@ -265,7 +265,7 @@ CONFIG_TARGET_armsr_armv8_DEVICE_generic=y
  [`P3TERX`](https://github.com/P3TERX/Actions-OpenWrt)
  [`Hyy2001X`](https://github.com/Hyy2001X/AutoBuild-Actions-Template)
  [`dhxh`](https://github.com/dhxh/Openwrt-Build)
- [`ophub`](https://github.com/ophub/amlogic-s9xxx-openwrt)
+ [`ophub`](https://github.com/ku891/amlogic-s9xxx-openwrt)
  [`nicholas-opensource`](https://github.com/nicholas-opensource/OpenWrt-Autobuild)
  [`hx210`](https://github.com/hx210/Actions-OpenWrt)
  [`hyird`](https://github.com/hyird/EasyTier)

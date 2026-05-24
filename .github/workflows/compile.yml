@@ -49,13 +49,13 @@ jobs:
       uses: actions/checkout@v4
 
     - name: 检测密匙/文件/版本
-      uses: 281677160/common@mishi
+      uses: ku891/common@mishi
         
     - name: 部署编译环境
       env:
         DEBIAN_FRONTEND: noninteractive
       run: |
-        sudo bash -c 'bash <(curl -fsSL https://github.com/281677160/common/raw/main/custom/ubuntu.sh)'
+        sudo bash -c 'bash <(curl -fsSL https://github.com/ku891/common/raw/main/custom/ubuntu.sh)'
         sudo timedatectl set-timezone "$TZ"
         sudo mkdir -p /${{ env.DIY_WORK }}
         sudo chown ${USER}:${GROUPS} /${{ env.DIY_WORK }}
@@ -69,15 +69,15 @@ jobs:
     
     - name: 公告
       continue-on-error: true
-      uses: 281677160/common@message
+      uses: ku891/common@message
  
     - name: 运行自定义文件和其他
-      uses: 281677160/common@need
+      uses: ku891/common@need
         
     - name: 编译信息
       continue-on-error: true
       if: env.COMPILATION_INFORMATION == 'true'
-      uses: 281677160/common@message
+      uses: ku891/common@message
         
     - name: 缓存加速
       if: env.CACHEWRTBUILD_SWITCH == 'true'
@@ -103,7 +103,7 @@ jobs:
 
     - name: 自动打包armsr_rootfs_tar_gz
       if: steps.compile.outcome == 'success' && env.ONLINE_FIRMWARE == 'true'
-      uses: 281677160/common@aarch
+      uses: ku891/common@aarch
 
     - name: 整理固件文件夹(需配合diy-part.sh设定使用)
       continue-on-error: true
@@ -115,8 +115,8 @@ jobs:
     - name: 发送[在线更新固件]至云端
       continue-on-error: true
       if: steps.compile.outcome == 'success' && env.UPDATE_FIRMWARE_ONLINE == 'true'
-      uses: 281677160/common@cloud
+      uses: ku891/common@cloud
         
     - name: 上传,发布,信息通知
       if: steps.compile.outcome == 'success'
-      uses: 281677160/common@uploads
+      uses: ku891/common@uploads

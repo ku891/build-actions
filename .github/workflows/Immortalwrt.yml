@@ -1,5 +1,5 @@
 #
-# 请大家记住拉取的是我的 281677160/build-actions 仓库，拉取的是其他仓库有问题，别问我，我也不清楚什么问题
+# 请大家记住拉取的是我的 ku891/build-actions 仓库，拉取的是其他仓库有问题，别问我，我也不清楚什么问题
 #
 # 因为SSH连接配置固件直接编译，会给github停止编译的,所以要另外触发启动编译程序
 #
@@ -108,7 +108,7 @@ jobs:
       uses: actions/checkout@v4
       
     - name: 检测密匙/文件/版本
-      uses: 281677160/common@mishi
+      uses: ku891/common@mishi
 
     - name: 部署编译环境
       env:
@@ -130,16 +130,16 @@ jobs:
     
     - name: 公告
       continue-on-error: true
-      uses: 281677160/common@message
+      uses: ku891/common@message
  
     - name: 运行其他和SSH远程(make menuconfig)
       id: info
-      uses: 281677160/common@need
+      uses: ku891/common@need
         
     - name: 编译信息
       continue-on-error: true
       if: env.COMPILATION_INFORMATION == 'true'
-      uses: 281677160/common@message
+      uses: ku891/common@message
     
     - name: 清理releases和workflows
       continue-on-error: true
@@ -159,4 +159,4 @@ jobs:
         
     - name: 触发启动"${{ matrix.target }}"开始编译
       if: steps.info.outcome == 'success'
-      uses: 281677160/common@trigger
+      uses: ku891/common@trigger
