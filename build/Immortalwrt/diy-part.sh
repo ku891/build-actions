@@ -5,7 +5,8 @@
 # 不要一下就拉取别人一个插件包N多插件的，多了没用，增加编译错误，自己需要的才好
 
 # ===== 添加feeds =====
-echo 'src-git fileshare https://github.com/ku891/fileshare-openwrt.git;main' >> feeds.conf.default
+grep -q 'src-git fileshare' feeds.conf.default || \
+  echo 'src-git fileshare https://github.com/ku891/fileshare-openwrt.git;main' >> feeds.conf.default
 # 预编译 node：在 feeds update 之后由 install-node-prebuilt.sh 执行（ku891/common 的 Diy_partsh）
 
 # 后台IP设置
