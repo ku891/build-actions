@@ -1,7 +1,7 @@
 #!/bin/bash
 # 为 OpenWrt 目标架构安装「已交叉编译」的 node（sbwml 预编译 apk，非 feeds 源码编译）
 install_node_cross() {
-  local owrt="${HOME_PATH:-${GITHUB_WORKSPACE}/openwrt}}"
+  local owrt="${HOME_PATH:-${GITHUB_WORKSPACE}/openwrt}"
   local node_ver="22.22.3"
   local node_repo="https://github.com/sbwml/feeds_packages_lang_node-prebuilt.git"
   local release_base="https://github.com/sbwml/node_workflow/releases/download/v${node_ver}"
