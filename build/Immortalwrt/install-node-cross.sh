@@ -36,7 +36,7 @@ install_node_cross() {
 
   sed -i "s|^PKG_VERSION:=.*|PKG_VERSION:=${node_ver}|" "$mf"
 
-  if curl -fsSL -o /dev/null -I "${release_base}/x86_64.tar.gz"; then
+  if curl -fsSL -o /dev/null -r "${release_base}/x86_64.tar.gz"; then
     echo "install-node-cross: release x86_64.tar.gz OK (v${node_ver})"
   else
     echo "install-node-cross: warn: cannot reach ${release_base}/x86_64.tar.gz"
