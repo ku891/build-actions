@@ -7,7 +7,7 @@
 # ===== 添加feeds =====
 grep -q 'src-git fileshare' feeds.conf.default || \
   echo 'src-git fileshare https://github.com/ku891/fileshare-openwrt.git;main' >> feeds.conf.default
-# 预编译 node：在 feeds update 之后由 install-node-prebuilt.sh 执行（ku891/common 的 Diy_partsh）
+# 交叉编译 node：feeds update 之后由 install-node-cross.sh 注入 sbwml 目标架构 node（见 ku891/common Diy_partsh / Diy_scripts）
 
 # 后台IP设置
 export Ipv4_ipaddr="192.168.5.5"            # 修改openwrt后台地址(填0为关闭)
