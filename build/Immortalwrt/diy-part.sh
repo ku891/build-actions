@@ -5,21 +5,8 @@
 # 不要一下就拉取别人一个插件包N多插件的，多了没用，增加编译错误，自己需要的才好
 
 # ===== 添加feeds =====
-# echo 'src-git fileshare https://github.com/ku891/fileshare-openwrt.git;main' >> feeds.conf.default
-
-# Node prebuilt for fileshare (avoid compiling node from source on cloud CI)
-install_node_prebuilt() {
-  local owrt="${HOME_PATH:-${GITHUB_WORKSPACE}/openwrt}}"
-  [[ -d "$owrt/feeds/packages/lang" ]] || return 0
-  rm -rf "$owrt/feeds/packages/lang/node"
-  if git clone --depth=1 -b packages-24.10 https://github.com/sbwml/feeds_packages_lang_node \
-      "$owrt/feeds/packages/lang/node" 2>/dev/null; then
-    return 0
-  fi
-  git clone --depth=1 https://github.com/sbwml/feeds_packages_lang_node-prebuilt \
-    "$owrt/feeds/packages/lang/node" 2>/dev/null || true
-}
-install_node_prebuilt
+echo 'src-git fileshare https://github.com/ku891/fileshare-openwrt.git;main' >> feeds.conf.default
+# 预编译 node：在 feeds update 之后由 install-node-prebuilt.sh 执行（ku891/common 的 Diy_partsh）
 
 # 后台IP设置
 export Ipv4_ipaddr="192.168.5.5"            # 修改openwrt后台地址(填0为关闭)
