@@ -103,6 +103,7 @@ jobs:
         export COMPILE_PATH="${GITHUB_WORKSPACE}/operates/Immortalwrt"
         # 缓存恢复后再 patch fileshare（24.10 不编 feeds/lang/node）
         bash "${COMPILE_PATH}/install-node-cross.sh"
+        scripts/config --set PACKAGE_node=n PACKAGE_node-npm=n 2>/dev/null || true
         rm -rf build_dir/target-*/node-* build_dir/target-*/fileshare-* 2>/dev/null || true
         echo -e "$(nproc) thread compile"
         make -j$(nproc) || make -j1 V=s
