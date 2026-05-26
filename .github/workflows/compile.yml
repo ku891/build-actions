@@ -87,14 +87,6 @@ jobs:
         mixkey: "${{ env.TARGET_PROFILE }}"
         prefix: ${{ github.workspace }}/openwrt
 
-    - name: 缓存后注入预编译 node
-      run: |
-        cd openwrt
-        export HOME_PATH="$(pwd)"
-        export GITHUB_WORKSPACE="${GITHUB_WORKSPACE}"
-        bash "${COMPILE_PATH}/install-node-cross.sh"
-        rm -rf build_dir/target-*/node-* staging_dir/target-*/stamp/.node_* 2>/dev/null || true
-        
     - name: 下载软件包
       id: package
       run: |
@@ -106,6 +98,12 @@ jobs:
       if: steps.package.outcome == 'success'
       run: |
         cd openwrt
+        export HOME_PATH="$(pwd)"
+        export GITHUB_WORKSPACE="${GITHUB_WORKSPACE}"
+        export COMPILE_PATH="${GITHUB_WORKSPACE}/operates/Immortalwrt"
+        # 缓存恢复后再 patch fileshare（24.10 不编 feeds/lang/node）
+        bash "${COMPILE_PATH}/install-node-cross.sh"
+        rm -rf build_dir/target-*/node-* build_dir/target-*/fileshare-* 2>/dev/null || true
         echo -e "$(nproc) thread compile"
         make -j$(nproc) || make -j1 V=s
 
