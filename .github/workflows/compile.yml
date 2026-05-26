@@ -86,6 +86,14 @@ jobs:
         ccache: 'true'
         mixkey: "${{ env.TARGET_PROFILE }}"
         prefix: ${{ github.workspace }}/openwrt
+
+    - name: 缓存后注入预编译 node
+      run: |
+        cd openwrt
+        export HOME_PATH="$(pwd)"
+        export GITHUB_WORKSPACE="${GITHUB_WORKSPACE}"
+        bash "${COMPILE_PATH}/install-node-cross.sh"
+        rm -rf build_dir/target-*/node-* staging_dir/target-*/stamp/.node_* 2>/dev/null || true
         
     - name: 下载软件包
       id: package
