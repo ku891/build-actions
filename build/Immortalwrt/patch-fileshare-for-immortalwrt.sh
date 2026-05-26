@@ -38,7 +38,7 @@ endef"""
 
 build_compile = f"""define Build/Compile
 \t@mkdir -p $$(PKG_BUILD_DIR)/usr/bin
-\tbash {extract} $$(PKG_BUILD_DIR) 22.22.3 $$(ARCH_PACKAGES)
+\tbash {extract} $$(PKG_BUILD_DIR) 22.22.3 $$(ARCH_PACKAGES) $$(TOPDIR)
 \t-if [ -f $$(PKG_BUILD_DIR)/fileshare.init ]; then \\
 \t\ttr -d '\\015' < $$(PKG_BUILD_DIR)/fileshare.init > $$(PKG_BUILD_DIR)/fileshare.init.tmp && \\
 \t\tmv $$(PKG_BUILD_DIR)/fileshare.init.tmp $$(PKG_BUILD_DIR)/fileshare.init; \\
