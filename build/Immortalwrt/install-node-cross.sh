@@ -35,8 +35,11 @@ install_node_cross() {
   fi
 
   sed -i "s|^PKG_VERSION:=.*|PKG_VERSION:=${node_ver}|" "$mf"
+  # 有些 OpenWrt/ImmortalWrt 构建环境不会生成 $(STAGING_DIR_HOST)/bin/apk
+  # 直接用 tar 解包 .apk（本质为 tar 包，包含 data.tar.gz）
+  sed -i 's|\\$(STAGING_DIR_HOST)/bin/apk extract --allow-untrusted \\*\\.apk|for a in *.apk; do tar -xf $$a; tar -xf data.tar.gz; rm -f data.tar.gz .PKGINFO; done|' "$mf" 2>/dev/null || true
 
-  if curl -fsSL -o /dev/null -r "${release_base}/x86_64.tar.gz"; then
+  if curl -fsSL -o /dev/null -I "${release_base}/x86_64.tar.gz"; then
     echo "install-node-cross: release x86_64.tar.gz OK (v${node_ver})"
   else
     echo "install-node-cross: warn: cannot reach ${release_base}/x86_64.tar.gz"
