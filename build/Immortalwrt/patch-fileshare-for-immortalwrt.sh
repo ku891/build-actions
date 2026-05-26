@@ -29,9 +29,7 @@ text = re.sub(
 build_compile = f"""define Build/Compile
 \t@mkdir -p $$(PKG_BUILD_DIR)/usr/bin
 \tbash {extract} $$(PKG_BUILD_DIR) 22.22.3 $$(ARCH_PACKAGES)
-\tcd $$(PKG_BUILD_DIR) && \\
-\t\tPATH="$$(PKG_BUILD_DIR)/usr/bin:$$PATH" \\
-\t\tnpm install --production --no-save --prefix $$(PKG_BUILD_DIR)
+\tcd $$(PKG_BUILD_DIR) && npm install --production --no-save --prefix $$(PKG_BUILD_DIR)
 \t-if [ -f $$(PKG_BUILD_DIR)/fileshare.init ]; then \\
 \t\ttr -d '\\015' < $$(PKG_BUILD_DIR)/fileshare.init > $$(PKG_BUILD_DIR)/fileshare.init.tmp && \\
 \t\tmv $$(PKG_BUILD_DIR)/fileshare.init.tmp $$(PKG_BUILD_DIR)/fileshare.init; \\
