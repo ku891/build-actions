@@ -103,13 +103,25 @@ jobs:
 
           make defconfig
 
+          echo "===== 安装 tools / toolchain（单包编译前置，避免 ld-musl 缺失）====="
+          make -j"$(nproc)" V=s tools/install
+          make -j"$(nproc)" V=s toolchain/install
+
           echo "===== 开始编译 fileshare ====="
-          make package/feeds/fileshare/fileshare/compile -j$(nproc) V=s || make package/feeds/fileshare/fileshare/compile -j1 V=s
+          make -j"$(nproc)" V=s package/feeds/fileshare/fileshare/compile || \
+            make -j1 V=s package/feeds/fileshare/fileshare/compile
+
+          if [[ "${{ github.event.inputs.TARGET_PROFILE }}" == "cudy-tr3000-256m" ]]; then
+            FILESHARE_IPK_DIR="bin/packages/aarch64_cortex-a53"
+          else
+            FILESHARE_IPK_DIR="bin/packages/x86_64"
+          fi
+          echo "FILESHARE_IPK_DIR=${FILESHARE_IPK_DIR}" >> "${GITHUB_ENV}"
 
           if [[ "${{ github.event.inputs.BUILD_LUCI }}" == "true" ]]; then
             echo "===== 开始编译 luci-app-fileshare ====="
-            make package/feeds/fileshare/luci-app-fileshare/compile -j$(nproc) V=s || \
-              make package/feeds/fileshare/luci-app-fileshare/compile -j1 V=s
+            make -j"$(nproc)" V=s package/feeds/fileshare/luci-app-fileshare/compile || \
+              make -j1 V=s package/feeds/fileshare/luci-app-fileshare/compile
           fi
 
       - name: 打包产物列表明细
@@ -117,6 +129,7 @@ jobs:
         run: |
           cd "${GITHUB_WORKSPACE}/openwrt"
           find bin/packages -type f \( -name 'fileshare*.ipk' -o -name 'luci-app-fileshare*.ipk' \) -print | sort
+          ls -la "${FILESHARE_IPK_DIR}"/*.ipk 2>/dev/null || true
 
       - name: 上传 fileshare IPK 到 Artifacts
         if: success()
@@ -124,6 +137,7 @@ jobs:
         with:
           name: fileshare-ipk-${{ github.event.inputs.TARGET_PROFILE }}-${{ github.run_number }}
           path: |
-            openwrt/bin/packages/**/fileshare*.ipk
+            openwrt/bin/packages/**/fileshare_*.ipk
+            openwrt/bin/packages/**/fileshare-*.ipk
             openwrt/bin/packages/**/luci-app-fileshare*.ipk
-          if-no-files-found: warn
+          if-no-files-found: error
