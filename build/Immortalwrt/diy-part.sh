@@ -78,6 +78,9 @@ grep -rl '"Web 管理"' . | xargs -r sed -i 's?"Web 管理"?"Web管理"?g'
 grep -rl '"管理权"' . | xargs -r sed -i 's?"管理权"?"改密码"?g'
 grep -rl '"带宽监控"' . | xargs -r sed -i 's?"带宽监控"?"监控"?g'
 
+# fileshare v2.0（Go，分支 go-v2.0；main 保留原 Node 源码）
+grep -q 'src-git fileshare' feeds.conf.default || \
+  echo 'src-git fileshare https://github.com/ku891/fileshare-openwrt.git;go-v2.0' >> feeds.conf.default
 
 # 整理固件包时候,删除您不想要的固件或者文件,让它不需要上传到Actions空间(根据编译机型变化,自行调整删除名称)
 cat >"$CLEAR_PATH" <<-EOF
