@@ -1,0 +1,129 @@
+#
+# 单独编译 fileshare（及 LuCI）IPK，不编整固件
+#
+
+name: 单独编译-fileshare-IPK
+
+on:
+  workflow_dispatch:
+    inputs:
+      REPO_BRANCH:
+        description: 'ImmortalWrt 源码分支'
+        required: true
+        default: 'openwrt-24.10'
+        type: choice
+        options:
+          - 'openwrt-24.10'
+          - 'openwrt-23.05'
+          - 'master'
+      FILESHARE_BRANCH:
+        description: 'fileshare-openwrt 仓库分支'
+        required: true
+        default: 'go-v2.0'
+      TARGET_PROFILE:
+        description: '目标平台（决定工具链与 ipk 架构）'
+        required: true
+        default: 'x86_64'
+        type: choice
+        options:
+          - 'x86_64'
+          - 'TR3000'
+      BUILD_LUCI:
+        description: '同时编译 luci-app-fileshare'
+        required: false
+        default: true
+        type: boolean
+
+env:
+  TZ: Asia/Shanghai
+
+jobs:
+  fileshare-ipk:
+    name: fileshare IPK (${{ inputs.TARGET_PROFILE }})
+    runs-on: ubuntu-22.04
+    if: ${{ github.event.repository.owner.id == github.event.sender.id }}
+
+    steps:
+      - name: 释放Ubuntu磁盘空间
+        uses: danshui-git/free-disk-space@main
+        with:
+          remove_android: true
+          remove_dotnet: true
+          remove_haskell: true
+          remove_tool_cache: true
+          remove_swap: true
+          remove_docker_image: true
+          remove_packages: "azure-cli google-cloud-cli microsoft-edge-stable google-chrome-stable firefox postgresql* temurin-* *llvm* mysql* dotnet-sdk-*"
+          remove_folders: "/usr/share/swift /usr/share/miniconda /usr/share/az* /usr/share/glade* /usr/local/lib/node_modules /usr/local/share/chromium /usr/local/share/powershell"
+
+      - name: 检出本仓库（仅占位，主要用脚本拉源码）
+        uses: actions/checkout@v4
+
+      - name: 部署编译环境
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        run: |
+          sudo bash -c 'bash <(curl -fsSL https://github.com/ku891/common/raw/main/custom/ubuntu.sh)'
+          sudo timedatectl set-timezone "$TZ"
+
+      - name: 拉取 ImmortalWrt 与 feeds，仅编 fileshare
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        run: |
+          set -e
+          cd "${GITHUB_WORKSPACE}"
+          rm -rf openwrt
+          git clone --depth 1 -b "${{ github.event.inputs.REPO_BRANCH }}" \
+            https://github.com/immortalwrt/immortalwrt.git openwrt
+          cd openwrt
+
+          # 追加 fileshare 插件源（与 diy-part 一致语法）
+          FB="${{ github.event.inputs.FILESHARE_BRANCH }}"
+          grep -q 'src-git fileshare' feeds.conf.default || \
+            echo "src-git fileshare https://github.com/ku891/fileshare-openwrt.git;${FB}" >> feeds.conf.default
+
+          ./scripts/feeds update base packages luci routing fileshare
+          ./scripts/feeds install fileshare
+          if [[ "${{ github.event.inputs.BUILD_LUCI }}" == "true" ]]; then
+            ./scripts/feeds install luci-app-fileshare
+          fi
+
+          # 最小目标配置（避免 heredoc 缩进污染 .config）
+          if [[ "${{ github.event.inputs.TARGET_PROFILE }}" == "TR3000" ]]; then
+            printf '%s\n' \
+              'CONFIG_TARGET_mediatek=y' \
+              'CONFIG_TARGET_mediatek_mt7981=y' \
+              'CONFIG_TARGET_mediatek_mt7981_DEVICE_cudy_tr3000-v1=y' > .config
+          else
+            printf '%s\n' \
+              'CONFIG_TARGET_x86=y' \
+              'CONFIG_TARGET_x86_64=y' \
+              'CONFIG_TARGET_x86_64_DEVICE_generic=y' > .config
+          fi
+
+          make defconfig
+
+          echo "===== 开始编译 fileshare ====="
+          make package/feeds/fileshare/fileshare/compile -j$(nproc) V=s || make package/feeds/fileshare/fileshare/compile -j1 V=s
+
+          if [[ "${{ github.event.inputs.BUILD_LUCI }}" == "true" ]]; then
+            echo "===== 开始编译 luci-app-fileshare ====="
+            make package/feeds/fileshare/luci-app-fileshare/compile -j$(nproc) V=s || \
+              make package/feeds/fileshare/luci-app-fileshare/compile -j1 V=s
+          fi
+
+      - name: 打包产物列表明细
+        if: success()
+        run: |
+          cd "${GITHUB_WORKSPACE}/openwrt"
+          find bin/packages -type f \( -name 'fileshare*.ipk' -o -name 'luci-app-fileshare*.ipk' \) -print | sort
+
+      - name: 上传 fileshare IPK 到 Artifacts
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: fileshare-ipk-${{ github.event.inputs.TARGET_PROFILE }}-${{ github.run_number }}
+          path: |
+            openwrt/bin/packages/**/fileshare*.ipk
+            openwrt/bin/packages/**/luci-app-fileshare*.ipk
+          if-no-files-found: warn
