@@ -30,7 +30,7 @@ on:
         options:
           - 'x86'
           - 'x86_64'
-          - 'TR3000'
+          - 'cudy-tr3000-256m'
           - 'armsr_rootfs_tar_gz'
       INFORMATION_NOTICE:
         description: 'Telegram或pushplus信息通知'

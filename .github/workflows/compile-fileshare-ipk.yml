@@ -27,7 +27,7 @@ on:
         type: choice
         options:
           - 'x86_64'
-          - 'TR3000'
+          - 'cudy-tr3000-256m'
       BUILD_LUCI:
         description: '同时编译 luci-app-fileshare'
         required: false
@@ -89,11 +89,11 @@ jobs:
           fi
 
           # 最小目标配置（避免 heredoc 缩进污染 .config）
-          if [[ "${{ github.event.inputs.TARGET_PROFILE }}" == "TR3000" ]]; then
+          if [[ "${{ github.event.inputs.TARGET_PROFILE }}" == "cudy-tr3000-256m" ]]; then
             printf '%s\n' \
               'CONFIG_TARGET_mediatek=y' \
-              'CONFIG_TARGET_mediatek_mt7981=y' \
-              'CONFIG_TARGET_mediatek_mt7981_DEVICE_cudy_tr3000-v1=y' > .config
+              'CONFIG_TARGET_mediatek_filogic=y' \
+              'CONFIG_TARGET_mediatek_filogic_DEVICE_cudy_tr3000-256mb-v1=y' > .config
           else
             printf '%s\n' \
               'CONFIG_TARGET_x86=y' \
