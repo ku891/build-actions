@@ -1,20 +1,20 @@
 ﻿#
-# 璇峰ぇ瀹惰浣忔媺鍙栫殑鏄垜鐨?ku891/build-actions 浠撳簱锛屾媺鍙栫殑鏄叾浠栦粨搴撴湁闂锛屽埆闂垜锛屾垜涔熶笉娓呮浠€涔堥棶棰?
+# 请大家记住拉取的是我的 ku891/build-actions 仓库，拉取的是其他仓库有问题，别问我，我也不清楚什么问题
 #
-# 鍥犱负SSH杩炴帴閰嶇疆鍥轰欢鐩存帴缂栬瘧锛屼細缁檊ithub鍋滄缂栬瘧鐨?鎵€浠ヨ鍙﹀瑙﹀彂鍚姩缂栬瘧绋嬪簭
+# 因为SSH连接配置固件直接编译，会给github停止编译的,所以要另外触发启动编译程序
 #
-# 涓€鑸儏鍐典笅閮借兘瑙﹀彂鍚姩缂栬瘧鐨勶紝闄ら潪娌¤缃ソ瀵嗗寵锛屾垨鑰呭瘑鍖欒繃鏈熶簡锛屾垨鑰呭瘑鍖欓敊璇箣绫荤殑
+# 一般情况下都能触发启动编译的，除非没设置好密匙，或者密匙过期了，或者密匙错误之类的
 #
-# REPO_TOKEN瀵嗗寵鍒朵綔鏁欑▼锛歨ttps://git.io/jm.md
+# REPO_TOKEN密匙制作教程：https://git.io/jm.md
 #
 #
 
-name: Immortalwrt-澶╃伒
+name: Immortalwrt-天灵
 on:
   workflow_dispatch:
     inputs:
       REPO_BRANCH:
-        description: '澶╃伒婧愮爜-璇烽€夋嫨鍒嗘敮'
+        description: '天灵源码-请选择分支'
         required: true
         default: 'openwrt-24.10'
         type: choice
@@ -23,7 +23,7 @@ on:
           - 'openwrt-23.05'
           - 'master'
       CONFIG_FILE:
-        description: '璇烽€夋嫨[seed鏂囦欢澶瑰唴]鐨勯厤缃枃浠?'
+        description: '请选择[seed文件夹内]的配置文件'
         required: true
         default: 'x86_64'
         type: choice
@@ -33,51 +33,51 @@ on:
           - 'TR3000'
           - 'armsr_rootfs_tar_gz'
       INFORMATION_NOTICE:
-        description: 'Telegram鎴杙ushplus淇℃伅閫氱煡'
+        description: 'Telegram或pushplus信息通知'
         required: true
-        default: '鍏抽棴'
+        default: '关闭'
         type: choice
         options:
-          - '鍏抽棴'
+          - '关闭'
           - 'Telegram'
           - 'Pushplus'
       KEEP_WORKFLOWS:
-        description: '娓呯悊workflows,淇濈暀[X]涓猺uns涓嶈娓呯悊'
+        description: '清理workflows,保留[X]个runs不被清理'
         required: true
         default: '50'
       KEEP_RELEASES:
-        description: '娓呯悊Releases,淇濈暀[X]涓猂eleases涓嶈娓呯悊'
+        description: '清理Releases,保留[X]个Releases不被清理'
         required: true
         default: '30'
       SSH_ACTION:
-        description: 'SSH杩滅▼閰嶇疆鍥轰欢'
+        description: 'SSH远程配置固件'
         required: false
         default: 'false'
         type: boolean
       UPLOAD_FIRMWARE:
-        description: '涓婁紶鍥轰欢鍒?Github Artifacts'
+        description: '上传固件到 Github Artifacts'
         required: false
         default: 'true'
         type: boolean
       UPLOAD_RELEASE:
-        description: '鍙戝竷鍥轰欢鍒?Github Releases'
+        description: '发布固件到 Github Releases'
         required: false
         default: 'false'
         type: boolean
       CACHEWRTBUILD_SWITCH:
-        description: '缂撳瓨鍔犻€熺紪璇?
+        description: '缓存加速编译'
         required: false
         default: 'true'
         type: boolean
       UPDATE_FIRMWARE_ONLINE:
-        description: '鍦ㄧ嚎鏇存柊鍥?鎵撳寘aarch64绯诲垪涓篿mg鍥轰欢'
+        description: '在线更新固/打包aarch64系列为img固件'
         required: false
         default: 'true'
         type: boolean
 
 
-# 濡傝嫢鍚姩瀹氭椂缂栬瘧鐨勮瘽,閰嶇疆鏂囦欢鏄缃搴旀枃浠跺す鍐呯殑settings.ini鏂囦欢
-# 瀹氭椂瑙﹀彂寮€鍚紑濮嬬紪璇?鎶婁笅闈袱涓?鍘绘帀寮€鍚?鏃堕棿璁剧疆璇风湅瀹氭椂寮€鍚紪璇戣鏄?
+# 如若启动定时编译的话,配置文件是设置对应文件夹内的settings.ini文件
+# 定时触发开启开始编译(把下面两个#去掉开启,时间设置请看定时开启编译说明)
 #  schedule:
 #   - cron: 35 18 * * *
 
@@ -91,7 +91,7 @@ env:
 
 jobs:
   build:
-    name: 鍚姩"${{ matrix.target }}-${{ github.event.inputs.REPO_BRANCH }}"瑙﹀彂缂栬瘧
+    name: 启动"${{ matrix.target }}-${{ github.event.inputs.REPO_BRANCH }}"触发编译
     runs-on: ubuntu-22.04
     if: ${{ github.event.repository.owner.id }} == ${{ github.event.sender.id }}
     
@@ -102,16 +102,16 @@ jobs:
       matrix:
         target: [Immortalwrt]
         
-        # 璇峰嬁瀵?target: [Immortalwrt] 鍋氫换浣曚慨鏀?
+        # 请勿对 target: [Immortalwrt] 做任何修改
         
     steps:
-    - name: 鍑嗗缁撴潫
+    - name: 准备结束
       uses: actions/checkout@v4
       
-    - name: 妫€娴嬪瘑鍖?鏂囦欢/鐗堟湰
+    - name: 检测密匙/文件/版本
       uses: ku891/common@mishi
 
-    - name: 閮ㄧ讲缂栬瘧鐜
+    - name: 部署编译环境
       env:
         DEBIAN_FRONTEND: noninteractive
       run: |
@@ -121,7 +121,7 @@ jobs:
         sudo mkdir -p /${{ env.DIY_WORK }}
         sudo chown $USER:$GROUPS /${{ env.DIY_WORK }}
     
-    - name: 涓嬭浇"${{ matrix.target }}-${{ inputs.REPO_BRANCH }}"婧愮爜
+    - name: 下载"${{ matrix.target }}-${{ inputs.REPO_BRANCH }}"源码
       working-directory: /${{ env.DIY_WORK }}
       run: |
         git clone -q -b "${REPO_BRANCH}" --single-branch "${REPO_URL}" openwrt
@@ -129,20 +129,20 @@ jobs:
         bash ${{ env.COMMON_SH }} Diy_feedsconf
         echo "SHANG_CHUAN=true" >> ${GITHUB_ENV}
     
-    - name: 鍏憡
+    - name: 公告
       continue-on-error: true
       uses: ku891/common@message
  
-    - name: 杩愯鍏朵粬鍜孲SH杩滅▼(make menuconfig)
+    - name: 运行其他和SSH远程(make menuconfig)
       id: info
       uses: ku891/common@need
         
-    - name: 缂栬瘧淇℃伅
+    - name: 编译信息
       continue-on-error: true
       if: env.COMPILATION_INFORMATION == 'true'
       uses: ku891/common@message
     
-    - name: 娓呯悊releases鍜寃orkflows
+    - name: 清理releases和workflows
       continue-on-error: true
       uses: danshui-git/delete-releases-workflows@main
       with:
@@ -158,6 +158,6 @@ jobs:
         repo: ${{ github.repository }}
         gh_token: ${{ secrets.REPO_TOKEN }}
         
-    - name: 瑙﹀彂鍚姩"${{ matrix.target }}"寮€濮嬬紪璇?
+    - name: 触发启动"${{ matrix.target }}"开始编译
       if: steps.info.outcome == 'success'
       uses: ku891/common@trigger
