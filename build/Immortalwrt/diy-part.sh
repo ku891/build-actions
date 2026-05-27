@@ -4,10 +4,7 @@
 # 自行拉取插件之前请SSH连接进入固件配置里面确认过没有你要的插件再单独拉取你需要的插件
 # 不要一下就拉取别人一个插件包N多插件的，多了没用，增加编译错误，自己需要的才好
 
-# ===== 添加feeds =====
-grep -q 'src-git fileshare' feeds.conf.default || \
-  echo 'src-git fileshare https://github.com/ku891/fileshare-openwrt.git;main' >> feeds.conf.default
-# 交叉编译 node：feeds update 之后由 install-node-cross.sh 注入 sbwml 目标架构 node（见 ku891/common Diy_partsh / Diy_scripts）
+# ===== 添加feeds（已移除 fileshare，避免 node 编译失败）=====
 
 # 后台IP设置
 export Ipv4_ipaddr="192.168.5.5"            # 修改openwrt后台地址(填0为关闭)
