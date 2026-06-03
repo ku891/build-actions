@@ -30,7 +30,7 @@ export Enable_IPV6_function="0"             # 编译IPV6固件(1为启用命令,
 export Enable_IPV4_function="0"             # 编译IPV4固件(1为启用命令,填0为不作修改)(如果跟Enable_IPV6_function一起启用命令的话,此命令会自动关闭)
 
 # 替换OpenClash的源码(默认master分支)
-export OpenClash_branch="0"                 # 1/2 会拉 feeds 易触发 mihomo 循环依赖导致编译失败；需要时在 seed 里开 luci-app-openclash
+export OpenClash_branch="1"                 # 1/2 会拉 feeds 易触发 mihomo 循环依赖导致编译失败；需要时在 seed 里开 luci-app-openclash
 
 # 个性签名,默认增加年月日[$(TZ=UTC-8 date "+%Y.%m.%d")]
 export Customized_Information="$(TZ=UTC-8 date "+%Y.%m.%d")"  # 个性签名,你想写啥就写啥，(填0为不作修改)
