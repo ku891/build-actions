@@ -31,6 +31,7 @@ on:
           - 'x86'
           - 'x86_64'
           - 'cudy-tr3000-256m'
+          - 'redmi-ax6000'
           - 'armsr_rootfs_tar_gz'
           - 'Xiaomi_Redmi_AX6000'
           - 'redmi-ax6000'
