@@ -7,11 +7,11 @@
 # 后台IP设置
 export Ipv4_ipaddr="192.168.5.5"            # 修改openwrt后台地址(填0为关闭)
 export Netmask_netm="255.255.255.0"         # IPv4 子网掩码（默认：255.255.255.0）(填0为不作修改)
-export Op_name="OPMini-Roman"                # 修改主机名称为OpenWrt-123(填0为不作修改)
+export Op_name="Redmi-AX6000"                 # 修改主机名称为OpenWrt-123(填0为不作修改)
 
 # 内核和系统分区大小(不是每个机型都可用)
-export Kernel_partition_size="0"                # TR3000 为 UBI 内置内核，勿改（填 256 会破坏分区）
-export Rootfs_partition_size="0"                # TR3000 分区由 DTS/UBI 固定，勿改
+export Kernel_partition_size="0"                # AX6000 为 UBI 内置内核，勿改（填 256 会破坏分区）
+export Rootfs_partition_size="0"                # AX6000 分区由 DTS/UBI 固定，勿改
 
 # 默认主题设置
 export Mandatory_theme="argon"              # 将bootstrap替换您需要的主题为必选主题(可自行更改您要的,源码要带此主题就行,填写名称也要写对) (填写主题名称,填0为不作修改)
