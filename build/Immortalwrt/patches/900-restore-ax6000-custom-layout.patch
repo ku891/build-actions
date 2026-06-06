@@ -1,0 +1,111 @@
+--- a/package/boot/uboot-envtools/files/mediatek_filogic
++++ b/package/boot/uboot-envtools/files/mediatek_filogic
+@@ -169,6 +169,7 @@ ubnt,unifi-6-plus)
+ ;;
+ xiaomi,mi-router-ax3000t|\
+ xiaomi,mi-router-wr30u-stock|\
++xiaomi,redmi-router-ax6000|\
+ xiaomi,redmi-router-ax6000-stock)
+ 	ubootenv_add_uci_config "/dev/mtd1" "0x0" "0x10000" "0x20000"
+ 	ubootenv_add_uci_sys_config "/dev/mtd2" "0x0" "0x10000" "0x20000"
+--- a/target/linux/mediatek/dts/mt7986a-xiaomi-redmi-router-ax6000.dts
++++ b/target/linux/mediatek/dts/mt7986a-xiaomi-redmi-router-ax6000.dts
+@@ -0,0 +1,42 @@
++// SPDX-License-Identifier: (GPL-2.0 OR MIT)
++
++/dts-v1/;
++#include "mt7986a-xiaomi-redmi-router-ax6000.dtsi"
++
++/ {
++	model = "Xiaomi Redmi Router AX6000";
++	compatible = "xiaomi,redmi-router-ax6000", "mediatek,mt7986a";
++};
++
++&spi_nand_flash {
++	mediatek,nmbm;
++	mediatek,bmt-max-ratio = <1>;
++	mediatek,bmt-max-reserved-blocks = <64>;
++};
++
++&partitions {
++	partition@580000 {
++		label = "crash";
++		reg = <0x580000 0x40000>;
++		read-only;
++	};
++
++	partition@5c0000 {
++		label = "crash_log";
++		reg = <0x5c0000 0x40000>;
++		read-only;
++	};
++
++	/* ubi partition is the result of squashing
++	 * consecutive stock partitions:
++	 * - ubi
++	 * - ubi1
++	 * - overlay
++	 */
++	partition@600000 {
++		label = "ubi";
++		reg = <0x600000 0x6e00000>;
++	};
++
++	/* last 12 MiB is reserved for NMBM bad block table */
++};
+--- a/target/linux/mediatek/filogic/base-files/etc/board.d/01_leds
++++ b/target/linux/mediatek/filogic/base-files/etc/board.d/01_leds
+@@ -248,6 +248,7 @@ xiaomi,mi-router-wr30u-stock|\
+ xiaomi,mi-router-wr30u-ubootmod)
+ 	ucidef_set_led_netdev "wan" "wan" "blue:wan" "wan" "link tx rx"
+ 	;;
++xiaomi,redmi-router-ax6000|\
+ xiaomi,redmi-router-ax6000-stock|\
+ xiaomi,redmi-router-ax6000-ubootmod)
+ 	ucidef_set_led_netdev "wan" "wan" "rgb:network" "wan" "link"
+--- a/target/linux/mediatek/filogic/base-files/etc/board.d/02_network
++++ b/target/linux/mediatek/filogic/base-files/etc/board.d/02_network
+@@ -168,6 +168,7 @@ mediatek_setup_interfaces()
+  xiaomi,mi-router-ax3000t-ubootmod|\
+  xiaomi,mi-router-wr30u-stock|\
+  xiaomi,mi-router-wr30u-ubootmod|\
++ xiaomi,redmi-router-ax6000|\
+  xiaomi,redmi-router-ax6000-stock|\
+  xiaomi,redmi-router-ax6000-ubootmod)
+ 	ucidef_set_interfaces_lan_wan "lan2 lan3 lan4" wan
+@@ -263,6 +264,7 @@ mediatek_setup_macs()
+  xiaomi,mi-router-ax3000t-ubootmod|\
+  xiaomi,mi-router-wr30u-stock|\
+  xiaomi,mi-router-wr30u-ubootmod|\
++ xiaomi,redmi-router-ax6000|\
+  xiaomi,redmi-router-ax6000-stock|\
+  xiaomi,redmi-router-ax6000-ubootmod)
+ 	wan_mac=$(mtd_get_mac_ascii Bdata ethaddr_wan)
+--- a/target/linux/mediatek/image/filogic.mk
++++ b/target/linux/mediatek/image/filogic.mk
+@@ -2303,6 +2303,25 @@ endif
+ endef
+ TARGET_DEVICES += xiaomi_mi-router-wr30u-ubootmod
+ 
++define Device/xiaomi_redmi-router-ax6000
++  DEVICE_VENDOR := Xiaomi
++  DEVICE_MODEL := Redmi Router AX6000
++  DEVICE_VARIANT := (custom U-Boot layout)
++  DEVICE_DTS := mt7986a-xiaomi-redmi-router-ax6000
++  DEVICE_DTS_DIR := ../dts
++  DEVICE_PACKAGES := kmod-leds-ws2812b kmod-mt7915e kmod-mt7986-firmware mt7986-wo-firmware
++  KERNEL_LOADADDR := 0x48000000
++  UBINIZE_OPTS := -E 5
++  BLOCKSIZE := 128k
++  PAGESIZE := 2048
++  IMAGE_SIZE := 112640k
++  KERNEL_IN_UBI := 1
++  IMAGES += factory.bin
++  IMAGE/factory.bin := append-ubi | check-size $$$$(IMAGE_SIZE)
++  IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
++endef
++TARGET_DEVICES += xiaomi_redmi-router-ax6000
++
+ define Device/xiaomi_redmi-router-ax6000-stock
+   DEVICE_VENDOR := Xiaomi
+   DEVICE_MODEL := Redmi Router AX6000
