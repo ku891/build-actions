@@ -2,16 +2,19 @@ CONFIG_TARGET_mediatek=y
 CONFIG_TARGET_mediatek_filogic=y
 CONFIG_TARGET_mediatek_filogic_DEVICE_xiaomi_redmi-router-ax6000=y
 
-# WiFi - MT7986 (required, or no SSID after flash)
+# WiFi - MT7986 (explicit; ImmortalWrt 24.10 has no kmod-mt_wifi)
 CONFIG_PACKAGE_kmod-mt7915e=y
 CONFIG_PACKAGE_kmod-mt7986-firmware=y
 CONFIG_PACKAGE_mt7986-wo-firmware=y
-CONFIG_PACKAGE_kmod-mt_wifi=y
+CONFIG_PACKAGE_kmod-cfg80211=y
+CONFIG_PACKAGE_kmod-mac80211=y
 CONFIG_PACKAGE_kmod-leds-ws2812b=y
 CONFIG_PACKAGE_wpad-openssl=y
 CONFIG_PACKAGE_hostapd-common=y
 CONFIG_PACKAGE_iw=y
+CONFIG_PACKAGE_iwinfo=y
 CONFIG_PACKAGE_wireless-regdb=y
+CONFIG_PACKAGE_luci-mod-network=y
 
 # base tools
 CONFIG_PACKAGE_auto-scripts=y
