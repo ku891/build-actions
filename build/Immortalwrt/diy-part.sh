@@ -30,7 +30,8 @@ export Enable_IPV6_function="0"             # 编译IPV6固件(1为启用命令,
 export Enable_IPV4_function="0"             # 编译IPV4固件(1为启用命令,填0为不作修改)(如果跟Enable_IPV6_function一起启用命令的话,此命令会自动关闭)
 
 # 替换OpenClash的源码(默认master分支)
-export OpenClash_branch="0"                 # 1/2 会拉 feeds 易触发 mihomo 循环依赖导致编译失败；需要时在 seed 里开 luci-app-openclash
+# 必须为 1 或 2：ku891/common 在填 0 时会强制写入「去除 luci-app-openclash」，seed 里写了也会被删掉
+export OpenClash_branch="1"                 # 0=强制去除 OpenClash；1=master；2=dev
 
 # 个性签名,默认增加年月日[$(TZ=UTC-8 date "+%Y.%m.%d")]
 export Customized_Information="$(TZ=UTC-8 date "+%Y.%m.%d")"  # 个性签名,你想写啥就写啥，(填0为不作修改)
@@ -65,6 +66,15 @@ export rootfs_size="512/2560"
 export kernel_usage="stable"
 
 
+# 打破 danshui feeds 里 mihomo-alpha ↔ mihomo-meta 循环依赖（Diy_definition source 本脚本时 feeds 已装好）
+_ku891_work="${HOME_PATH:-$(pwd)}"
+if [[ -d "${_ku891_work}/feeds/danshui/mihomo-alpha" ]]; then
+  rm -rf "${_ku891_work}/feeds/danshui/mihomo-alpha"
+fi
+unset _ku891_work
+
+# 以下仅 DIY_PT1 执行阶段运行（被 source 时跳过，避免重复 sed）
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
 # 修改插件名字
 grep -rl '"终端"' . | xargs -r sed -i 's?"终端"?"TTYD"?g'
 grep -rl '"TTYD 终端"' . | xargs -r sed -i 's?"TTYD 终端"?"TTYD"?g'
@@ -90,6 +100,4 @@ EOF
 # 在线更新时，删除不想保留固件的某个文件，在EOF跟EOF之间加入删除代码，记住这里对应的是固件的文件路径，比如： rm -rf /etc/config/luci
 cat >>$DELETE <<-EOF
 EOF
-
-# 打破 OpenClash 相关 feeds 循环依赖
-rm -rf feeds/danshui/mihomo-alpha 2>/dev/null || true
+fi
