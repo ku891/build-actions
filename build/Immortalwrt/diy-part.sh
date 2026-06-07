@@ -75,28 +75,38 @@ fi
 
 # ImmortalWrt 24.10 官方源码不含 MTK 闭源 WiFi；从 mt798x-6.6 叠加 kmod-mt_wifi 驱动包。
 # 注：hanwckf openwrt-21.02 驱动面向内核 5.4，无法用于 24.10/6.6；此处使用同系列驱动的 6.6 移植版。
-if [[ ! -d "${_ku891_work}/package/mtk/drivers/mt_wifi" ]]; then
-  _mtk_cache="/tmp/mt798x-mtk-src"
-  _mtk_repo="https://github.com/padavanonly/immortalwrt-mt798x-6.6.git"
-  _mtk_branch="openwrt-24.10-6.6"
-  if [[ ! -d "${_mtk_cache}/.git" ]]; then
-    git clone --depth=1 -b "${_mtk_branch}" "${_mtk_repo}" "${_mtk_cache}"
+# 只叠加 MTK 相关内核文件，勿整目录 rsync files-6.6（会覆盖 qmi_wwan.c 导致 hack-780 补丁失败）。
+_mtk_cache="/tmp/mt798x-mtk-src"
+_mtk_repo="https://github.com/padavanonly/immortalwrt-mt798x-6.6.git"
+_mtk_branch="openwrt-24.10-6.6"
+if [[ ! -d "${_mtk_cache}/.git" ]]; then
+  git clone --depth=1 -b "${_mtk_branch}" "${_mtk_repo}" "${_mtk_cache}"
+fi
+if [[ -d "${_mtk_cache}/package/mtk" ]]; then
+  mkdir -p "${_ku891_work}/package"
+  rsync -a "${_mtk_cache}/package/mtk/" "${_ku891_work}/package/mtk/"
+fi
+_mtk_kbase="${_mtk_cache}/target/linux/mediatek/files-6.6"
+_mtk_kdst="${_ku891_work}/target/linux/mediatek/files-6.6"
+for _rel in drivers/net/ethernet/mediatek/mtk_hnat drivers/net/wireless/wifi_utility; do
+  if [[ -d "${_mtk_kbase}/${_rel}" ]]; then
+    mkdir -p "${_mtk_kdst}/$(dirname "${_rel}")"
+    rsync -a "${_mtk_kbase}/${_rel}/" "${_mtk_kdst}/${_rel}/"
   fi
-  if [[ -d "${_mtk_cache}/package/mtk" ]]; then
-    mkdir -p "${_ku891_work}/package"
-    rsync -a "${_mtk_cache}/package/mtk/" "${_ku891_work}/package/mtk/"
-  fi
-  if [[ -d "${_mtk_cache}/target/linux/mediatek/files-6.6" ]]; then
-    mkdir -p "${_ku891_work}/target/linux/mediatek"
-    rsync -a "${_mtk_cache}/target/linux/mediatek/files-6.6/" "${_ku891_work}/target/linux/mediatek/files-6.6/"
-  fi
-  if [[ -d "${_mtk_cache}/target/linux/mediatek/files" ]]; then
-    mkdir -p "${_ku891_work}/target/linux/mediatek"
-    rsync -a "${_mtk_cache}/target/linux/mediatek/files/" "${_ku891_work}/target/linux/mediatek/files/"
-  fi
+done
+_mtk_pdir="${_ku891_work}/target/linux/mediatek/patches-6.6"
+_hnat_patch="${_mtk_cache}/target/linux/mediatek/patches-6.6/999-2745-mtkhnat-add-mtkhnat-driver-support.patch"
+if [[ -f "${_hnat_patch}" ]]; then
+  mkdir -p "${_mtk_pdir}"
+  cp -f "${_hnat_patch}" "${_mtk_pdir}/950-mtkhnat-add-mtkhnat-driver-support.patch"
+fi
+_nd="${_ku891_work}/package/kernel/linux/modules/netdevices.mk"
+if [[ -f "${_nd}" ]] && ! grep -q 'KernelPackage/mediatek_hnat' "${_nd}"; then
+  sed -n '/^define KernelPackage\/mediatek_hnat/,/^$(eval $(call KernelPackage,mediatek_hnat))/p' \
+    "${_mtk_cache}/package/kernel/linux/modules/netdevices.mk" >> "${_nd}"
 fi
 
-unset _ku891_work _mtk_cache _mtk_repo _mtk_branch
+unset _ku891_work _mtk_cache _mtk_repo _mtk_branch _mtk_kbase _mtk_kdst _rel _mtk_pdir _hnat_patch _nd
 
 # 以下仅 DIY_PT1 执行阶段运行（被 source 时跳过，避免重复 sed）
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
