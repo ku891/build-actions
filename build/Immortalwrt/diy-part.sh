@@ -68,10 +68,35 @@ export kernel_usage="stable"
 
 # 打破 danshui feeds 里 mihomo-alpha ↔ mihomo-meta 循环依赖（Diy_definition source 本脚本时 feeds 已装好）
 _ku891_work="${HOME_PATH:-$(pwd)}"
+
 if [[ -d "${_ku891_work}/feeds/danshui/mihomo-alpha" ]]; then
   rm -rf "${_ku891_work}/feeds/danshui/mihomo-alpha"
 fi
-unset _ku891_work
+
+# ImmortalWrt 24.10 官方源码不含 MTK 闭源 WiFi；从 mt798x-6.6 叠加 kmod-mt_wifi 驱动包。
+# 注：hanwckf openwrt-21.02 驱动面向内核 5.4，无法用于 24.10/6.6；此处使用同系列驱动的 6.6 移植版。
+if [[ ! -d "${_ku891_work}/package/mtk/drivers/mt_wifi" ]]; then
+  _mtk_cache="/tmp/mt798x-mtk-src"
+  _mtk_repo="https://github.com/padavanonly/immortalwrt-mt798x-6.6.git"
+  _mtk_branch="openwrt-24.10-6.6"
+  if [[ ! -d "${_mtk_cache}/.git" ]]; then
+    git clone --depth=1 -b "${_mtk_branch}" "${_mtk_repo}" "${_mtk_cache}"
+  fi
+  if [[ -d "${_mtk_cache}/package/mtk" ]]; then
+    mkdir -p "${_ku891_work}/package"
+    rsync -a "${_mtk_cache}/package/mtk/" "${_ku891_work}/package/mtk/"
+  fi
+  if [[ -d "${_mtk_cache}/target/linux/mediatek/files-6.6" ]]; then
+    mkdir -p "${_ku891_work}/target/linux/mediatek"
+    rsync -a "${_mtk_cache}/target/linux/mediatek/files-6.6/" "${_ku891_work}/target/linux/mediatek/files-6.6/"
+  fi
+  if [[ -d "${_mtk_cache}/target/linux/mediatek/files" ]]; then
+    mkdir -p "${_ku891_work}/target/linux/mediatek"
+    rsync -a "${_mtk_cache}/target/linux/mediatek/files/" "${_ku891_work}/target/linux/mediatek/files/"
+  fi
+fi
+
+unset _ku891_work _mtk_cache _mtk_repo _mtk_branch
 
 # 以下仅 DIY_PT1 执行阶段运行（被 source 时跳过，避免重复 sed）
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then

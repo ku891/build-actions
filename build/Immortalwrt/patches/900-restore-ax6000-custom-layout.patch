@@ -93,7 +93,7 @@
 +  DEVICE_VARIANT := (custom U-Boot layout)
 +  DEVICE_DTS := mt7986a-xiaomi-redmi-router-ax6000
 +  DEVICE_DTS_DIR := ../dts
-+  DEVICE_PACKAGES := kmod-leds-ws2812b kmod-mt7915e kmod-mt7986-firmware mt7986-wo-firmware wpad-openssl hostapd-common iw wireless-regdb
++  DEVICE_PACKAGES := kmod-leds-ws2812b kmod-mt_wifi kmod-warp kmod-conninfra kmod-mediatek_hnat mtwifi-cfg wifi-dats datconf datconf-lua iw wireless-regdb
 +  KERNEL_LOADADDR := 0x48000000
 +  UBINIZE_OPTS := -E 5
 +  BLOCKSIZE := 128k
