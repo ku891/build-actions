@@ -19,9 +19,7 @@
 
  5、修复 `packaging.yml` 下载逻辑：wget 失败后才 fallback 到 curl（原先写反）
 
- 6、Mt798x `diy-part.sh` 删除 x86 专用 `CLEAR_PATH` 条目，避免误删 ARM 固件产物
-
- 7、ku891/common 兼容 openwrt-24.10 多条 `ipaddr:-` 默认 IP，`Ipv4_ipaddr` 等旁路由变量可正常写入固件（需 common 仓库 main 已更新）
+ 6、ku891/common 兼容 openwrt-24.10 多条 `ipaddr:-` 默认 IP，`Ipv4_ipaddr` 等旁路由变量可正常写入固件（需 common 仓库 main 已更新）
 
 
  ---
