@@ -1,8 +1,28 @@
 
 <details>
-<summary>⬆️更新说明（2025年5月30号）</summary>
+<summary>⬆️更新说明（2026年6月9号）</summary>
 
  
+
+ ---
+ <br>
+  2026年6月9号
+ <br><br>
+
+ 1、Mt798x（红米 AX6000 / Cudy TR3000）修复 WiFi 加密选项缺失问题：seed 增加 `luci-app-mtwifi-cfg` 及中文语言包，LuCI 可正常选择 WPA2/WPA3
+
+ 2、Mt798x 增加 MosDNS 插件：`seed` 勾选 `mosdns`、`luci-app-mosdns`；`diy-part.sh` 从 [sbwml/luci-app-mosdns](https://github.com/sbwml/luci-app-mosdns) v5 分支拉取源码编译
+
+ 3、Mt798x 旁路由默认开启去桥接（`Disable_Bridge="1"`），配合 `Ipv4_ipaddr=192.168.5.5`、网关/DNS `192.168.5.10`、关闭 DHCP 使用
+
+ 4、Mt798x `settings.ini` 默认分支修正为 `openwrt-24.10-6.6`（原 `2410` 写法无效）
+
+ 5、修复 `packaging.yml` 下载逻辑：wget 失败后才 fallback 到 curl（原先写反）
+
+ 6、Mt798x `diy-part.sh` 删除 x86 专用 `CLEAR_PATH` 条目，避免误删 ARM 固件产物
+
+ 7、ku891/common 兼容 openwrt-24.10 多条 `ipaddr:-` 默认 IP，`Ipv4_ipaddr` 等旁路由变量可正常写入固件（需 common 仓库 main 已更新）
+
 
  ---
  <br>
