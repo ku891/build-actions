@@ -67,15 +67,11 @@ export auto_kernel="true"
 export rootfs_size="512/2560"
 export kernel_usage="stable"
 
-# 增加 MosDNS（seed 里 CONFIG_PACKAGE_luci-app-mosdns=y）
-rm -rf ${HOME_PATH}/package/mosdns
-git clone --depth=1 --branch v5 https://github.com/sbwml/luci-app-mosdns ${HOME_PATH}/package/mosdns
-
-# 增加 fileshare（seed 里 CONFIG_PACKAGE_luci-app-fileshare=y，源：ku891/fileshare-openwrt）
-[[ -f "${GITHUB_ENV}" ]] && . "${GITHUB_ENV}" 2>/dev/null
-if [[ -n "${HOME_PATH}" && -f "${HOME_PATH}/feeds.conf.default" ]] && ! grep -q 'src-git fileshare' "${HOME_PATH}/feeds.conf.default"; then
+# 增加插件源（seed 已勾选 mosdns / fileshare）
+grep -q 'src-git mosdns' "${HOME_PATH}/feeds.conf.default" || \
+  echo "src-git mosdns https://github.com/sbwml/luci-app-mosdns.git;v5" >> "${HOME_PATH}/feeds.conf.default"
+grep -q 'src-git fileshare' "${HOME_PATH}/feeds.conf.default" || \
   echo "src-git fileshare https://github.com/ku891/fileshare-openwrt.git;main" >> "${HOME_PATH}/feeds.conf.default"
-fi
 
 # 修改插件名字
 grep -rl '"终端"' . | xargs -r sed -i 's?"终端"?"TTYD"?g'
