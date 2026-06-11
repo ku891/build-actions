@@ -8,7 +8,9 @@
 # 后台IP设置
 export Ipv4_ipaddr="192.168.5.5"            # 修改openwrt后台地址(填0为关闭)
 export Netmask_netm="255.255.255.0"         # IPv4 子网掩码（默认：255.255.255.0）(填0为不作修改)
-export Op_name="Redmi-AX6000"                # 修改主机名称为OpenWrt-123(填0为不作修改)
+# 主机名按 seed/CONFIG_FILE 自动设置（须单行 export，common 会写入 diy2-part.sh）
+[[ -f "${GITHUB_ENV}" ]] && . "${GITHUB_ENV}" 2>/dev/null
+export Op_name="$(case "${CONFIG_FILE:-${MYCONFIG_FILE##*/}}" in redmi-ax6000) echo 'Redmi-AX6000';; cudy_tr3000-v1-256mb) echo 'Cudy-TR3000';; jcg-q30) echo 'JCG-Q30';; glinet-gl-xe3000) echo 'GL-XE3000';; 360-t7-108M) echo '360-T7';; clt-r30b1-112M) echo 'CLT-R30B1';; cmcc-rax3000m-emmc) echo 'CMCC-RAX3000M';; cmcc_rax3000me) echo 'CMCC-RAX3000ME';; huasifei-wh3000-emmc) echo 'HWH-WH3000';; x86_64) echo 'OPMini-X86';; *) echo "${CONFIG_FILE:-OpenWrt}";; esac)"  # 不修改主机名时整行改为 export Op_name="0"
 
 # 内核和系统分区大小(不是每个机型都可用)
 export Kernel_partition_size="0"            # 内核分区大小,每个机型默认值不一样 (填写您想要的数值,默认一般16,数值以MB计算，填0为不作修改),如果你不懂就填0
@@ -68,6 +70,12 @@ export kernel_usage="stable"
 # 增加 MosDNS（seed 里 CONFIG_PACKAGE_luci-app-mosdns=y）
 rm -rf ${HOME_PATH}/package/mosdns
 git clone --depth=1 --branch v5 https://github.com/sbwml/luci-app-mosdns ${HOME_PATH}/package/mosdns
+
+# 增加 fileshare（seed 里 CONFIG_PACKAGE_luci-app-fileshare=y，源：ku891/fileshare-openwrt）
+[[ -f "${GITHUB_ENV}" ]] && . "${GITHUB_ENV}" 2>/dev/null
+if [[ -n "${HOME_PATH}" && -f "${HOME_PATH}/feeds.conf.default" ]] && ! grep -q 'src-git fileshare' "${HOME_PATH}/feeds.conf.default"; then
+  echo "src-git fileshare https://github.com/ku891/fileshare-openwrt.git;main" >> "${HOME_PATH}/feeds.conf.default"
+fi
 
 # 修改插件名字
 grep -rl '"终端"' . | xargs -r sed -i 's?"终端"?"TTYD"?g'
