@@ -116,11 +116,11 @@ if ($ImmortalwrtOnly) {
 }
 
 Write-Host ""
-Write-Host "完成! 查看进度: https://github.com/$Repo/actions"
+Write-Host "Done: https://github.com/$Repo/actions"
 if ($ImmortalwrtOnly) {
-    Write-Host "  Immortalwrt-天灵 x3: x86_64, redmi-ax6000, cudy-tr3000-256m"
+    Write-Host "  Immortalwrt x3: x86_64, redmi-ax6000, cudy-tr3000-256m"
 } elseif ($Mt798xOnly) {
-    Write-Host "  Mt798x-mtk闭源 x2: redmi-ax6000, cudy_tr3000-v1-256mb"
+    Write-Host "  Mt798x x2: redmi-ax6000, cudy_tr3000-v1-256mb"
 } else {
-    Write-Host "  Mt798x x2 + Immortalwrt x86_64 共 3 个任务"
+    Write-Host "  Mt798x x2 + Immortalwrt x86_64 (3 jobs total)"
 }
