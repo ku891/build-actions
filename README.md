@@ -21,6 +21,10 @@
 
  6、ku891/common 兼容 openwrt-24.10 多条 `ipaddr:-` 默认 IP，`Ipv4_ipaddr` 等旁路由变量可正常写入固件（需 common 仓库 main 已更新）
 
+ 7、Immortalwrt 同步 Mt798x：`diy-part.sh` 增加 mosdns / fileshare feeds、`Op_name` 按 CONFIG_FILE 自动映射；seed（redmi-ax6000、cudy-tr3000-256m）增加 fileshare、mtwifi-cfg
+
+ 8、ku891/common `restart_scripts` 增加 mtwifi `htmode` 自检补全，在线升级保留配置后 WiFi 不易因缺 `htmode` 起不来（需 push common main）
+
 
  ---
  <br>

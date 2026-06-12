@@ -7,7 +7,9 @@
 # 后台IP设置
 export Ipv4_ipaddr="192.168.5.5"            # 修改openwrt后台地址(填0为关闭)
 export Netmask_netm="255.255.255.0"         # IPv4 子网掩码（默认：255.255.255.0）(填0为不作修改)
-export Op_name="Redmi-AX6000"                 # 修改主机名称为OpenWrt-123(填0为不作修改)
+# 主机名按 seed/CONFIG_FILE 自动设置（须单行 export，common 会写入 diy2-part.sh）
+[[ -f "${GITHUB_ENV}" ]] && . "${GITHUB_ENV}" 2>/dev/null
+export Op_name="$(case "${CONFIG_FILE:-${MYCONFIG_FILE##*/}}" in redmi-ax6000) echo 'Redmi-AX6000';; cudy-tr3000-256m|cudy_tr3000-v1-256mb) echo 'Cudy-TR3000';; x86_64) echo 'OPMini-X86';; armsr_rootfs_tar_gz) echo 'ARM64-Rootfs';; *) echo "${CONFIG_FILE:-OpenWrt}";; esac)"  # 不修改主机名时整行改为 export Op_name="0"
 
 # 内核和系统分区大小(不是每个机型都可用)
 export Kernel_partition_size="0"                # AX6000 为 UBI 内置内核，勿改（填 256 会破坏分区）
@@ -110,6 +112,12 @@ unset _ku891_work _mtk_cache _mtk_repo _mtk_branch _mtk_kbase _mtk_kdst _rel _mt
 
 # 以下仅 DIY_PT1 执行阶段运行（被 source 时跳过，避免重复 sed）
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+# 增加插件源（seed 已勾选 mosdns / fileshare）
+grep -q 'src-git mosdns' "${HOME_PATH}/feeds.conf.default" || \
+  echo "src-git mosdns https://github.com/sbwml/luci-app-mosdns.git;v5" >> "${HOME_PATH}/feeds.conf.default"
+grep -q 'src-git fileshare' "${HOME_PATH}/feeds.conf.default" || \
+  echo "src-git fileshare https://github.com/ku891/fileshare-openwrt.git;main" >> "${HOME_PATH}/feeds.conf.default"
+
 # 修改插件名字
 grep -rl '"终端"' . | xargs -r sed -i 's?"终端"?"TTYD"?g'
 grep -rl '"TTYD 终端"' . | xargs -r sed -i 's?"TTYD 终端"?"TTYD"?g'
