@@ -68,8 +68,11 @@ export rootfs_size="512/2560"
 export kernel_usage="stable"
 
 # 增加插件源（seed 已勾选 mosdns / fileshare）
-grep -q 'src-git mosdns' "${HOME_PATH}/feeds.conf.default" || \
-  echo "src-git mosdns https://github.com/sbwml/luci-app-mosdns.git;v5" >> "${HOME_PATH}/feeds.conf.default"
+if grep -q 'src-git mosdns' "${HOME_PATH}/feeds.conf.default"; then
+  sed -i 's|^src-git mosdns.*|src-git mosdns https://github.com/sbwml/luci-app-mosdns.git;v5.3.3-r5|' "${HOME_PATH}/feeds.conf.default"
+else
+  echo "src-git mosdns https://github.com/sbwml/luci-app-mosdns.git;v5.3.3-r5" >> "${HOME_PATH}/feeds.conf.default"
+fi
 grep -q 'src-git fileshare' "${HOME_PATH}/feeds.conf.default" || \
   echo "src-git fileshare https://github.com/ku891/fileshare-openwrt.git;main" >> "${HOME_PATH}/feeds.conf.default"
 
