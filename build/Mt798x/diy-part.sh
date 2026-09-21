@@ -75,6 +75,10 @@ else
 fi
 grep -q 'src-git fileshare' "${HOME_PATH}/feeds.conf.default" || \
   echo "src-git fileshare https://github.com/ku891/fileshare-openwrt.git;main" >> "${HOME_PATH}/feeds.conf.default"
+grep -q 'src-git qosmate' "${HOME_PATH}/feeds.conf.default" || \
+  echo "src-git qosmate https://github.com/hudra0/qosmate.git package/qosmate" >> "${HOME_PATH}/feeds.conf.default"
+grep -q 'src-git luci-app-qosmate' "${HOME_PATH}/feeds.conf.default" || \
+  echo "src-git luci-app-qosmate https://github.com/hudra0/luci-app-qosmate.git package/luci-app-qosmate" >> "${HOME_PATH}/feeds.conf.default"
 
 # 修改插件名字
 grep -rl '"终端"' . | xargs -r sed -i 's?"终端"?"TTYD"?g'
